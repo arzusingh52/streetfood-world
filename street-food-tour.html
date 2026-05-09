@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>🍽️ Global Street Food Tour</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --cream: #faf6ef;
+  --warm: #f2ebe0;
+  --bark: #2c1a0e;
+  --spice: #c0392b;
+  --gold: #d4a843;
+  --sage: #5a7a5a;
+  --text: #1a1008;
+  --muted: #7a6855;
+  --card-bg: #ffffff;
+  --border: #e8dfd0;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--cream);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+.site-header {
+  background: var(--bark);
+  color: #faf6ef;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 20px rgba(44,26,14,0.3);
+}
+
+.logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.logo span { color: var(--gold); }
+
+.nav-pills { display: flex; gap: 8px; }
+
+.nav-pill {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #faf6ef;
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nav-pill:hover, .nav-pill.active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--bark);
+  font-weight: 600;
+}
+
+/* ── MAIN LAYOUT ── */
+.main { max-width: 1100px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+/* ── SECTION VISIBILITY ── */
+.section { display: none; }
+.section.active { display: block; animation: fadeUp 0.4s ease; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── HERO ── */
+.hero {
+  text-align: center;
+  padding: 2rem 0 3rem;
+}
+
+.hero-tag {
+  display: inline-block;
+  background: var(--gold);
+  color: var(--bark);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 4px 14px;
+  border-radius: 50px;
+  margin-bottom: 1.25rem;
+}
+
+.hero h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 3.6rem;
+  font-weight: 700;
+  color: var(--bark);
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+
+.hero h1 em { color: var(--spice); font-style: italic; }
+
+.hero p {
+  color: var(--muted);
+  font-size: 1.05rem;
+  max-width: 480px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+/* ── WHEEL SECTION ── */
+.wheel-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.wheel-container {
+  position: relative;
+  width: 340px;
+  height: 340px;
+}
+
+.wheel-pointer {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-top: 28px solid var(--spice);
+  z-index: 10;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+#wheel-canvas {
+  border-radius: 50%;
+  box-shadow: 0 8px 40px rgba(44,26,14,0.2);
+}
+
+.spin-btn {
+  background: var(--spice);
+  color: #fff;
+  border: none;
+  padding: 1rem 3rem;
+  border-radius: 50px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 20px rgba(192,57,43,0.35);
+  letter-spacing: 0.5px;
+}
+
+.spin-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(192,57,43,0.45); }
+.spin-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.spin-result {
+  text-align: center;
+  padding: 1.5rem 2rem;
+  background: var(--bark);
+  color: var(--cream);
+  border-radius: 16px;
+  min-width: 300px;
+  display: none;
+  animation: fadeUp 0.5s ease;
+}
+
+.spin-result.show { display: block; }
+.spin-result .country-flag { font-size: 3rem; margin-bottom: 0.5rem; display: block; }
+.spin-result h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; color: var(--gold); margin-bottom: 0.25rem; }
+.spin-result p { font-size: 0.9rem; color: rgba(255,255,255,0.65); margin-bottom: 1rem; }
+
+.explore-btn {
+  background: var(--gold);
+  color: var(--bark);
+  border: none;
+  padding: 0.7rem 2rem;
+  border-radius: 50px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.explore-btn:hover { background: #e0b84d; transform: scale(1.03); }
+
+/* ── SEARCH BAR ── */
+.search-wrap {
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.search-wrap input {
+  width: 100%;
+  padding: 0.85rem 1.25rem 0.85rem 3rem;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  background: var(--card-bg);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.search-wrap input:focus { border-color: var(--gold); }
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.1rem;
+  pointer-events: none;
+}
+
+/* ── COUNTRY GRID ── */
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--bark);
+  margin-bottom: 0.5rem;
+}
+
+.section-sub {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-bottom: 1.75rem;
+  font-weight: 300;
+}
+
+.country-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.country-card {
+  background: var(--card-bg);
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  padding: 1.25rem 1rem;
+  cursor: pointer;
+  transition: all 0.22s;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.country-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--bark);
+  opacity: 0;
+  transition: opacity 0.22s;
+  border-radius: 14px;
+}
+
+.country-card:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(44,26,14,0.12); border-color: var(--gold); }
+.country-card:hover::before { opacity: 0.03; }
+
+.country-card .flag { font-size: 2.6rem; margin-bottom: 0.6rem; display: block; }
+.country-card .c-name { font-weight: 600; font-size: 0.95rem; color: var(--bark); margin-bottom: 4px; }
+.country-card .c-food { font-size: 0.78rem; color: var(--muted); }
+
+.fav-dot {
+  position: absolute;
+  top: 10px; right: 10px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  z-index: 2;
+  transition: transform 0.2s;
+}
+
+.fav-dot:hover { transform: scale(1.3); }
+
+/* ── FOOD DETAIL MODAL ── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(44,26,14,0.6);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  backdrop-filter: blur(4px);
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--card-bg);
+  border-radius: 24px;
+  max-width: 720px;
+  width: 100%;
+  max-height: 88vh;
+  overflow-y: auto;
+  position: relative;
+  animation: fadeUp 0.35s ease;
+  box-shadow: 0 20px 60px rgba(44,26,14,0.3);
+}
+
+.modal-close {
+  position: absolute;
+  top: 1.25rem; right: 1.25rem;
+  background: var(--warm);
+  border: none;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+  z-index: 10;
+}
+
+.modal-close:hover { background: var(--border); }
+
+.modal-hero {
+  background: var(--bark);
+  padding: 2.5rem 2rem 2rem;
+  border-radius: 24px 24px 0 0;
+  text-align: center;
+}
+
+.modal-flag { font-size: 4rem; display: block; margin-bottom: 0.75rem; }
+.modal-country { color: var(--gold); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.25rem; }
+.modal-food-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--cream);
+  line-height: 1.2;
+}
+
+.modal-body { padding: 2rem; }
+
+.food-tabs { display: flex; gap: 6px; margin-bottom: 1.75rem; flex-wrap: wrap; }
+
+.food-tab {
+  background: var(--warm);
+  border: 1.5px solid var(--border);
+  color: var(--muted);
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Outfit', sans-serif;
+}
+
+.food-tab.active {
+  background: var(--bark);
+  border-color: var(--bark);
+  color: var(--cream);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; animation: fadeUp 0.3s ease; }
+
+/* Overview tab */
+.food-desc { font-size: 0.97rem; color: var(--muted); line-height: 1.8; margin-bottom: 1.5rem; font-weight: 300; }
+
+.info-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.5rem; }
+.info-chip {
+  background: var(--warm);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 7px 14px;
+  font-size: 0.82rem;
+}
+.info-chip strong { color: var(--bark); display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+.info-chip span { color: var(--muted); }
+
+.fun-fact-box {
+  background: linear-gradient(135deg, #fff8ee, #fff3e3);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 12px 12px 0;
+  padding: 1rem 1.25rem;
+  margin-top: 1rem;
+}
+
+.fun-fact-box .fact-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gold); margin-bottom: 5px; font-weight: 600; }
+.fun-fact-box p { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
+
+/* Recipe tab */
+.recipe-section { margin-bottom: 1.5rem; }
+.recipe-section h4 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--spice); margin-bottom: 0.75rem; font-weight: 600; }
+
+.ingredients-list { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.ingredients-list li { font-size: 0.88rem; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+.ingredients-list li::before { content: '•'; color: var(--gold); font-size: 1.2rem; }
+
+.steps-list { list-style: none; counter-reset: steps; }
+.steps-list li {
+  counter-increment: steps;
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.65;
+  padding: 0.75rem 0 0.75rem 3rem;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  font-weight: 300;
+}
+.steps-list li:last-child { border-bottom: none; }
+.steps-list li::before {
+  content: counter(steps);
+  position: absolute;
+  left: 0;
+  top: 0.75rem;
+  background: var(--bark);
+  color: var(--cream);
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+/* ── STATS BAR ── */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.stat-card {
+  background: var(--card-bg);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.stat-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--bark);
+  display: block;
+}
+
+.stat-label { font-size: 0.8rem; color: var(--muted); }
+
+/* ── FAVORITES ── */
+.empty-fav {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--muted);
+}
+
+.empty-fav .big-icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .hero h1 { font-size: 2.4rem; }
+  .wheel-container { width: 280px; height: 280px; }
+  .ingredients-list { grid-template-columns: 1fr; }
+  .stats-bar { grid-template-columns: 1fr; }
+  .nav-pill { font-size: 0.75rem; padding: 5px 12px; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="logo">Street<span>Food</span> World</div>
+  <nav class="nav-pills">
+    <button class="nav-pill active" onclick="showSection('home')">🏠 Home</button>
+    <button class="nav-pill" onclick="showSection('explore')">🌍 Explore</button>
+    <button class="nav-pill" onclick="showSection('favorites')">❤️ Saved</button>
+  </nav>
+</header>
+
+<main class="main">
+
+  <!-- ══ HOME ══ -->
+  <div id="sec-home" class="section active">
+    <div class="hero">
+      <span class="hero-tag">🌶️ 14 Countries · 28 Dishes</span>
+      <h1>Travel the World<br/>Through <em>Street Food</em></h1>
+      <p>Spin the wheel, land on a country, and dive into its most iconic street eats — with recipes, fun facts & more.</p>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat-card">
+        <span class="stat-num">14</span>
+        <span class="stat-label">Countries</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num">28</span>
+        <span class="stat-label">Dishes</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num" id="fav-count-stat">0</span>
+        <span class="stat-label">Saved by You</span>
+      </div>
+    </div>
+
+    <div class="wheel-area">
+      <div class="wheel-container">
+        <div class="wheel-pointer"></div>
+        <canvas id="wheel-canvas" width="340" height="340"></canvas>
+      </div>
+      <button class="spin-btn" id="spin-btn" onclick="spinWheel()">🎲 Spin the Wheel</button>
+      <div class="spin-result" id="spin-result">
+        <span class="country-flag" id="spin-flag"></span>
+        <h2 id="spin-country"></h2>
+        <p id="spin-dish"></p>
+        <button class="explore-btn" id="spin-explore-btn">Explore This Country →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ EXPLORE ══ -->
+  <div id="sec-explore" class="section">
+    <div class="section-title">Explore the World</div>
+    <div class="section-sub">Click any country to discover its iconic street foods.</div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="Search country or dish..." oninput="filterCountries()"/>
+    </div>
+    <div class="country-grid" id="country-grid"></div>
+  </div>
+
+  <!-- ══ FAVORITES ══ -->
+  <div id="sec-favorites" class="section">
+    <div class="section-title">Your Saved Dishes</div>
+    <div class="section-sub">Countries you've hearted appear here.</div>
+    <div class="country-grid" id="fav-grid"></div>
+    <div class="empty-fav" id="fav-empty">
+      <span class="big-icon">🍜</span>
+      <p>No saved dishes yet — heart a country while exploring!</p>
+    </div>
+  </div>
+
+</main>
+
+<!-- ══ FOOD MODAL ══ -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-hero">
+      <span class="modal-flag" id="m-flag"></span>
+      <div class="modal-country" id="m-country"></div>
+      <div class="modal-food-name" id="m-food"></div>
+    </div>
+    <div class="modal-body">
+      <div class="food-tabs">
+        <button class="food-tab active" onclick="switchTab('overview', this)">Overview</button>
+        <button class="food-tab" onclick="switchTab('recipe', this)">Recipe</button>
+        <button class="food-tab" onclick="switchTab('dish2', this)" id="dish2-tab"></button>
+      </div>
+
+      <div id="tab-overview" class="tab-content active">
+        <p class="food-desc" id="m-desc"></p>
+        <div class="info-chips" id="m-chips"></div>
+        <div class="fun-fact-box">
+          <div class="fact-label">🌟 Fun Fact</div>
+          <p id="m-fact"></p>
+        </div>
+      </div>
+
+      <div id="tab-recipe" class="tab-content">
+        <div class="recipe-section">
+          <h4>Ingredients</h4>
+          <ul class="ingredients-list" id="m-ingredients"></ul>
+        </div>
+        <div class="recipe-section">
+          <h4>Steps</h4>
+          <ol class="steps-list" id="m-steps"></ol>
+        </div>
+      </div>
+
+      <div id="tab-dish2" class="tab-content">
+        <p class="food-desc" id="m-desc2"></p>
+        <div class="fun-fact-box">
+          <div class="fact-label">🌟 Fun Fact</div>
+          <p id="m-fact2"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══ DATA ══
+const countries = [
+  {
+    id: "india", name: "India", flag: "🇮🇳",
+    tagline: "Spices, chaos & pure magic",
+    food: "Pani Puri",
+    food2: "Vada Pav",
+    desc: "Pani Puri — also called Golgappa or Phuchka — is the undisputed king of Indian street food. Hollow crisp shells filled with spiced mashed potato and tangy, minty water. One bite and the flavour explosion is unforgettable.",
+    desc2: "Vada Pav is Mumbai's iconic vegetarian burger — a spiced potato fritter (vada) tucked inside a soft bun (pav) with chutneys. Cheap, filling, and beloved by millions.",
+    chips: [{l:"Origin", v:"Mumbai / All India"},{l:"Spice Level", v:"🌶️🌶️🌶️"},{l:"Best Time", v:"Evening snack"},{l:"Price", v:"₹10–30"}],
+    fact: "Pani Puri has a Guinness World Record attempt in India — over 10,000 portions were served in a single hour at a food festival in Gujarat!",
+    fact2: "There are more Vada Pav stalls in Mumbai than McDonald's outlets across all of India.",
+    ingredients: ["6 small potatoes, boiled", "1 cup chickpeas", "2 tbsp mint chutney", "Tamarind water", "Cumin powder", "Chaat masala", "Crispy puri shells", "Fresh coriander"],
+    steps: ["Mash the boiled potatoes with cumin, salt, and chaat masala.", "Cook chickpeas with turmeric and salt until soft.", "Prepare tangy pani by blending mint, coriander, tamarind and chilli with cold water.", "Fill each crispy puri with potato, chickpeas and a pour of pani.", "Serve immediately and eat in one bite!"]
+  },
+  {
+    id: "japan", name: "Japan", flag: "🇯🇵",
+    tagline: "Precision, umami & street-side warmth",
+    food: "Takoyaki",
+    food2: "Yakitori",
+    desc: "Takoyaki are ball-shaped savoury pancakes filled with diced octopus, tempura scraps, pickled ginger and spring onion. Cooked in a special molded pan, they're topped with mayo, okonomiyaki sauce and bonito flakes that dance in the steam.",
+    desc2: "Yakitori are skewered chicken pieces grilled over charcoal with either a soy-mirin tare glaze or just salt. Every part of the chicken is used — a nose-to-tail philosophy on a stick.",
+    chips: [{l:"Origin", v:"Osaka"},{l:"Spice Level", v:"🌶️"},{l:"Best Time", v:"Festival nights"},{l:"Price", v:"¥300–600"}],
+    fact: "Osaka has over 3,000 takoyaki stalls and the city considers it a civic duty to have a takoyaki maker at home — they're a standard kitchen appliance!",
+    fact2: "During the 2011 earthquake, yakitori stalls in Tohoku served free skewers to rescue workers for weeks. Street food as community care.",
+    ingredients: ["200g octopus, diced", "2 cups takoyaki flour batter", "2 tbsp pickled ginger", "3 spring onions, sliced", "Tempura flakes (tenkasu)", "Okonomiyaki sauce", "Japanese mayo", "Bonito flakes & aonori"],
+    steps: ["Heat the takoyaki pan and oil each mold well.", "Pour batter to fill each mold, then add octopus, ginger, spring onion and tenkasu.", "Cook until edges set, then rotate each ball 90° with a skewer.", "Keep rotating until perfectly golden and round, about 5 minutes.", "Transfer to plate, drizzle with sauce and mayo, top with bonito flakes."]
+  },
+  {
+    id: "mexico", name: "Mexico", flag: "🇲🇽",
+    tagline: "Bold, smoky & bright as a fiesta",
+    food: "Tacos al Pastor",
+    food2: "Elote (Street Corn)",
+    desc: "Tacos al Pastor are the crown jewel of Mexico City's taco scene. Thinly sliced marinated pork, shaved from a vertical spit (trompo) onto a small corn tortilla with pineapple, onion, cilantro and salsa. A Lebanese-Mexican fusion masterpiece.",
+    desc2: "Elote is grilled corn on the cob slathered with mayo, cotija cheese, chilli powder and lime juice — messy, indulgent and absolutely delicious.",
+    chips: [{l:"Origin", v:"Mexico City"},{l:"Spice Level", v:"🌶️🌶️"},{l:"Best Time", v:"Late night"},{l:"Price", v:"MX$15–25"}],
+    fact: "Al Pastor's cooking technique was brought to Mexico by Lebanese immigrants in the 1930s who used vertical spits for shawarma. Mexico adapted it with pork and chilli — and the world is grateful.",
+    fact2: "Mexico produces over 28 million tonnes of corn annually. Street corn (elote and esquites) is so embedded in culture it has its own dedicated vendors called 'eloteros'.",
+    ingredients: ["500g pork shoulder, thin sliced", "3 dried guajillo chillies", "1 chipotle in adobo", "Pineapple slices", "Small corn tortillas", "White onion, diced", "Fresh cilantro", "Lime & salsa verde"],
+    steps: ["Blend guajillo, chipotle, garlic, cumin, oregano and orange juice into a marinade.", "Marinate pork slices for at least 4 hours (overnight is best).", "Stack marinated pork on a vertical skewer with pineapple on top.", "Grill or roast, shaving off thin slices as outer layer cooks.", "Serve on warm tortillas with onion, cilantro, pineapple and salsa."]
+  },
+  {
+    id: "thailand", name: "Thailand", flag: "🇹🇭",
+    tagline: "Sweet, sour, spicy — all at once",
+    food: "Pad Thai",
+    food2: "Mango Sticky Rice",
+    desc: "Pad Thai is arguably the world's most famous stir-fried noodle dish — rice noodles tossed with egg, tofu or shrimp, bean sprouts, spring onions and a tamarind-fish sauce-palm sugar glaze, topped with crushed peanuts and lime.",
+    desc2: "Mango Sticky Rice (Khao Niao Mamuang) is Thailand's most beloved dessert — glutinous rice soaked in coconut milk, served with ripe golden mango and a drizzle of sweet coconut cream.",
+    chips: [{l:"Origin", v:"Bangkok"},{l:"Spice Level", v:"🌶️🌶️"},{l:"Best Time", v:"Anytime!"},{l:"Price", v:"฿50–80"}],
+    fact: "Pad Thai was essentially invented by the Thai government in the 1930s to promote national identity and reduce rice consumption during a shortage. A government-designed dish that conquered the world!",
+    fact2: "Mango Sticky Rice is so popular in Thailand that Nam Dok Mai mangoes — the preferred variety — are harvested specifically for this dish during April-May season.",
+    ingredients: ["200g rice noodles", "200g shrimp or tofu", "3 tbsp tamarind paste", "2 tbsp fish sauce", "1 tbsp palm sugar", "2 eggs", "Bean sprouts", "Crushed peanuts & lime"],
+    steps: ["Soak rice noodles in warm water for 30 minutes until pliable.", "Mix tamarind, fish sauce and palm sugar into a sauce.", "Stir-fry garlic and shrimp/tofu in very hot wok until cooked.", "Add noodles and sauce, toss vigorously.", "Push aside, scramble eggs in the pan then combine everything.", "Serve topped with bean sprouts, peanuts, spring onion and lime."]
+  },
+  {
+    id: "turkey", name: "Turkey", flag: "🇹🇷",
+    tagline: "Ancient crossroads of flavour",
+    food: "Simit",
+    food2: "Dürüm",
+    desc: "Simit is Istanbul's iconic circular sesame-coated bread ring — crispy on the outside, chewy within. Sold from red carts all over Turkey, it's breakfast, lunch and snack all in one. The heartbeat of Turkish street life.",
+    desc2: "Dürüm is a thin lavash wrap filled with döner meat, fresh vegetables, sumac-spiced onions and yogurt sauce. The Turkish answer to the wrap — and vastly superior.",
+    chips: [{l:"Origin", v:"Istanbul"},{l:"Spice Level", v:"🌶️"},{l:"Best Time", v:"Breakfast & morning"},{l:"Price", v:"₺5–15"}],
+    fact: "Istanbul's simit sellers (Simitçi) are so iconic that there's a famous Turkish proverb: 'Istanbul has two symbols — the Bosphorus and the Simit cart.' Around 300 million simits are sold daily across Turkey.",
+    fact2: "The döner kebab was adapted by Turkish immigrants in Berlin in the 1970s and became Germany's most popular fast food. There are now more döner shops in Germany than in Turkey!",
+    ingredients: ["500g bread dough", "1 cup grape molasses", "1 cup sesame seeds", "1 tsp salt", "1 tbsp olive oil", "Warm water"],
+    steps: ["Divide dough into equal pieces and roll into long ropes.", "Form each rope into a circle and pinch the ends together tightly.", "Dip each ring into diluted grape molasses solution.", "Coat generously in sesame seeds.", "Bake at 220°C for 15–18 minutes until deep golden and crispy."]
+  },
+  {
+    id: "vietnam", name: "Vietnam", flag: "🇻🇳",
+    tagline: "Fresh, fragrant & soul-warming",
+    food: "Bánh Mì",
+    food2: "Phở",
+    desc: "Bánh Mì is the perfect sandwich — a French baguette (legacy of colonialism) filled with Vietnamese pork, pâté, pickled daikon and carrot, fresh coriander, cucumber and chilli. A collision of cultures in every bite.",
+    desc2: "Phở is Vietnam's national soul food — a deeply fragrant beef or chicken bone broth simmered for hours with star anise, cinnamon and ginger, served over rice noodles with fresh herbs, lime and hoisin.",
+    chips: [{l:"Origin", v:"Saigon / Hanoi"},{l:"Spice Level", v:"🌶️🌶️"},{l:"Best Time", v:"Breakfast to lunch"},{l:"Price", v:"₫20,000–40,000"}],
+    fact: "The bánh mì baguette is lighter and airier than French baguettes because Vietnamese bakers adapted it using rice flour — a happy accident of ingredient scarcity that made it perfectly crisp.",
+    fact2: "A single bowl of Phở requires a broth simmered for 6–12 hours. Some Hanoi pho masters have been maintaining a continuously running broth pot for over 50 years.",
+    ingredients: ["1 French baguette", "100g Vietnamese pork roll (chả lụa)", "2 tbsp pork pâté", "Pickled daikon & carrot", "Fresh cucumber strips", "Fresh coriander", "1 red chilli, sliced", "Mayonnaise & soy sauce"],
+    steps: ["Slice baguette lengthwise without cutting all the way through.", "Spread pâté on one side and mayonnaise on the other.", "Layer sliced pork roll inside the baguette.", "Add pickled vegetables, cucumber and sliced chilli.", "Finish generously with fresh coriander. Serve immediately."]
+  },
+  {
+    id: "nigeria", name: "Nigeria", flag: "🇳🇬",
+    tagline: "Bold, festive & deeply communal",
+    food: "Suya",
+    food2: "Akara",
+    desc: "Suya is Nigeria's legendary spiced beef skewer — thin strips of beef rubbed with a yaji spice blend of groundnuts, ginger, paprika and chilli, grilled over open flames and served with raw onion, tomato and newspaper. Pure, smoky perfection.",
+    desc2: "Akara are fried black-eyed pea fritters — crispy outside, fluffy inside, seasoned with onion and pepper. Eaten for breakfast with akamu porridge or pap, they are the heartbeat of West African mornings.",
+    chips: [{l:"Origin", v:"Northern Nigeria"},{l:"Spice Level", v:"🌶️🌶️🌶️"},{l:"Best Time", v:"Evening & night"},{l:"Price", v:"₦200–500"}],
+    fact: "Suya vendors — known as mai suya — are almost exclusively from the Hausa ethnic group of northern Nigeria. Their spice recipe (yaji) is often a closely guarded family secret passed down generations.",
+    fact2: "Akara has West African roots that travelled across the Atlantic through the slave trade. In Brazil it became Acarajé, a sacred food in Candomblé religion, and is now a UNESCO cultural heritage dish.",
+    ingredients: ["300g beef sirloin, thinly sliced", "3 tbsp groundnut (peanut) powder", "2 tsp paprika", "1 tsp ginger powder", "1 tsp garlic powder", "Chilli flakes to taste", "Salt", "Vegetable oil"],
+    steps: ["Mix all dry spices with groundnut powder and a pinch of salt.", "Coat beef strips generously in the yaji spice mixture.", "Thread onto flat metal skewers and let marinate 30 minutes.", "Grill over very high heat, turning every 2 minutes.", "Dust with more dry spice mix halfway through cooking.", "Serve with sliced onions and tomatoes."]
+  },
+  {
+    id: "italy", name: "Italy", flag: "🇮🇹",
+    tagline: "Simple, proud & utterly perfect",
+    food: "Arancini",
+    food2: "Pizza al Taglio",
+    desc: "Arancini are Sicilian fried rice balls — golden, crispy orbs filled with ragù, mozzarella and peas, coated in breadcrumbs and fried until shatteringly crunchy. A hand-held masterpiece of Italian cucina povera.",
+    desc2: "Pizza al Taglio (pizza by the slice) is Rome's original fast food — thick-crust rectangular pizza sold by weight from trays, with seasonal toppings. Every Roman has their favourite slice shop.",
+    chips: [{l:"Origin", v:"Sicily"},{l:"Spice Level", v:"🌶️"},{l:"Best Time", v:"Lunch & snack"},{l:"Price", v:"€2–4"}],
+    fact: "Arancini — meaning 'little oranges' — date back to 10th century Arab-Norman Sicily. They were originally made to preserve saffron-cooked rice, stuffed and fried to last longer. Necessity birthed a masterpiece.",
+    fact2: "Rome's pizza al taglio bakeries (forno) are licensed separately from restaurants — they can only sell pizza by weight, not serve it at tables. This creates a whole separate pizza culture in the city.",
+    ingredients: ["400g risotto rice", "1 cup meat ragù", "100g mozzarella, cubed", "50g peas, cooked", "2 eggs, beaten", "1 cup breadcrumbs", "Parmesan, grated", "Vegetable oil for frying"],
+    steps: ["Cook risotto rice with saffron broth until al dente. Cool completely.", "Shape rice into a ball, press a hole in the centre.", "Fill with ragù, mozzarella and peas. Seal well into a ball.", "Roll in flour, dip in egg, coat in breadcrumbs.", "Deep fry at 180°C until deep golden, about 4 minutes.", "Drain and serve immediately while gooey inside."]
+  },
+  {
+    id: "korea", name: "South Korea", flag: "🇰🇷",
+    tagline: "Trendy, fiery & full of personality",
+    food: "Tteokbokki",
+    food2: "Hotteok",
+    desc: "Tteokbokki are chewy cylinder-shaped rice cakes stir-fried in a gochujang (fermented red chilli) sauce with fish cakes and spring onions. Addictively spicy, sweet and chewy — the ultimate Korean street snack.",
+    desc2: "Hotteok are sweet Korean pancakes filled with brown sugar, cinnamon and crushed nuts, pressed flat and fried until caramelized. Seoul's winter street food essential — crispy outside with a molten sweet centre.",
+    chips: [{l:"Origin", v:"Seoul"},{l:"Spice Level", v:"🌶️🌶️🌶️"},{l:"Best Time", v:"Afternoon snack"},{l:"Price", v:"₩2,000–4,000"}],
+    fact: "Tteokbokki was originally a royal court dish in the Joseon Dynasty (1392–1910) — a non-spicy soy sauce version served to kings. The spicy gochujang version only became popular in the 1950s when chilli paste became widely available.",
+    fact2: "Hotteok vendors in Seoul's Myeongdong district sell over 500 pancakes per hour on cold winter days. The queue is considered part of the experience.",
+    ingredients: ["300g cylindrical rice cakes (tteok)", "150g fish cakes, sliced", "3 tbsp gochujang paste", "1 tbsp soy sauce", "1 tbsp sugar", "2 spring onions", "2 cups dashi stock", "Sesame seeds"],
+    steps: ["Soak rice cakes in cold water for 20 minutes if dried.", "Bring dashi stock to a boil in a wide pan.", "Add gochujang, soy sauce and sugar, stir until dissolved.", "Add rice cakes and fish cakes, simmer 8–10 minutes stirring often.", "Sauce will thicken and coat the rice cakes glossily.", "Top with sliced spring onions and sesame seeds."]
+  },
+  {
+    id: "egypt", name: "Egypt", flag: "🇪🇬",
+    tagline: "Ancient recipes, timeless flavours",
+    food: "Koshari",
+    food2: "Ta'meya (Falafel)",
+    desc: "Koshari is Egypt's beloved national dish — a hearty mix of rice, lentils, chickpeas and pasta topped with crispy fried onions, spiced tomato sauce and a garlic vinegar dressing. Cheap, filling, vegetarian and magnificent.",
+    desc2: "Egyptian Ta'meya (falafel) is made from dried fava beans — not chickpeas like the Lebanese version — giving it a greener interior and earthier flavour. Stuffed in warm bread with salad and tahini.",
+    chips: [{l:"Origin", v:"Cairo"},{l:"Spice Level", v:"🌶️🌶️"},{l:"Best Time", v:"Lunch"},{l:"Price", v:"EGP 15–30"}],
+    fact: "Koshari is a living fossil of Egypt's colonial history — rice from India, pasta from Italy, lentils from ancient Egypt, and tomatoes from the Americas. Every empire that passed through left an ingredient.",
+    fact2: "Egypt is the only country that makes falafel from fava beans. When Egyptian immigrants tried to make ta'meya in other countries and couldn't find fava beans, they switched to chickpeas — and unknowingly created the Middle Eastern falafel the world knows.",
+    ingredients: ["1 cup rice", "1 cup brown lentils", "1 cup chickpeas", "200g macaroni pasta", "3 large onions, sliced thin", "400g crushed tomatoes", "4 garlic cloves", "Cumin, coriander, cinnamon"],
+    steps: ["Cook lentils until just tender. Cook rice. Cook pasta. Cook chickpeas.", "Fry onion slices in oil over medium heat until deeply caramelized and crispy.", "Make tomato sauce: fry garlic, add tomatoes, cumin, coriander, simmer 15 min.", "Make dressing: mix vinegar, garlic, cumin and a pinch of chilli.", "Layer rice, lentils, pasta and chickpeas in a bowl.", "Top with tomato sauce, crispy onions and a drizzle of the garlic dressing."]
+  },
+  {
+    id: "peru", name: "Peru", flag: "🇵🇪",
+    tagline: "Citrus fire from the Pacific coast",
+    food: "Ceviche",
+    food2: "Anticuchos",
+    desc: "Peruvian Ceviche is raw fresh fish cured in tiger's milk (leche de tigre) — a fierce mix of lime juice, ají amarillo chilli, garlic and ginger. Served with sweet potato, corn and crispy cancha (toasted corn). It's basically sunshine in a bowl.",
+    desc2: "Anticuchos are marinated beef heart skewers grilled over charcoal — a dish with Incan roots refined over centuries. Served with boiled potato and aji panca sauce at every street corner in Lima.",
+    chips: [{l:"Origin", v:"Lima"},{l:"Spice Level", v:"🌶️🌶️"},{l:"Best Time", v:"Lunch"},{l:"Price", v:"S/. 10–20"}],
+    fact: "The 'leche de tigre' (tiger's milk) leftover from ceviche is drunk as a shot in Peru and is believed to cure hangovers. Cevicherias often sell it separately as a tonic.",
+    fact2: "Anticuchos were originally made by Andean people from llama heart. Spanish colonizers were given only offal — so enslaved and indigenous people brilliantly seasoned and grilled it into something spectacular.",
+    ingredients: ["500g fresh sea bass or white fish", "1 cup fresh lime juice", "1 ají amarillo chilli", "2 garlic cloves", "1 tbsp fresh ginger, grated", "Red onion, thinly sliced", "Fresh coriander", "Sweet potato & corn to serve"],
+    steps: ["Cut fish into 2cm cubes and season with salt.", "Blend lime juice, ají amarillo, garlic, ginger and a pinch of salt into tiger's milk.", "Pour tiger's milk over fish and mix. The lime 'cooks' the fish in 3 minutes.", "Add sliced red onion and coriander, toss gently.", "Serve immediately with boiled sweet potato and corn kernels.", "Drink any leftover tiger's milk as a shot!"]
+  },
+  {
+    id: "morocco", name: "Morocco", flag: "🇲🇦",
+    tagline: "Spice routes & medina magic",
+    food: "Msemen",
+    food2: "Merguez",
+    desc: "Msemen are flaky, layered Moroccan flatbreads — folded and pan-fried in butter until golden and crispy on the edges, soft and chewy inside. Eaten for breakfast with honey and argan oil, or stuffed with kefta meat.",
+    desc2: "Merguez are spiced lamb and beef sausages seasoned with harissa, cumin, coriander and fennel — grilled over charcoal and stuffed into bread with harissa. The smell alone stops you in your tracks at Jemaa el-Fna square.",
+    chips: [{l:"Origin", v:"Marrakech / Fes"},{l:"Spice Level", v:"🌶️🌶️"},{l:"Best Time", v:"Breakfast & evening"},{l:"Price", v:"MAD 5–15"}],
+    fact: "Jemaa el-Fna square in Marrakech transforms into the world's largest open-air restaurant each evening — hundreds of food stalls appear at sunset, feeding thousands of people and listed as UNESCO Intangible Cultural Heritage.",
+    fact2: "Merguez sausages were brought to France by North African immigrants and became so embedded in French cuisine that they're now a staple at every French barbecue — more popular than traditional French sausages among young French people.",
+    ingredients: ["500g semolina flour", "250g plain flour", "1 tsp salt", "1 tsp sugar", "300ml warm water", "2 tbsp butter, melted", "2 tbsp vegetable oil"],
+    steps: ["Mix flours, salt and sugar. Add warm water gradually to form a soft dough.", "Knead for 10 minutes until smooth and elastic.", "Divide into balls, rest 20 minutes covered.", "Stretch each ball flat, fold in thirds with butter between each layer.", "Fold again into a square. Let rest 10 minutes.", "Pan-fry in a lightly oiled pan on medium heat until golden both sides."]
+  },
+  {
+    id: "usa", name: "USA", flag: "🇺🇸",
+    tagline: "Big, bold & unapologetically delicious",
+    food: "Lobster Roll",
+    food2: "Chicago Hot Dog",
+    desc: "The New England Lobster Roll — chilled, sweet lobster meat tossed in a whisper of mayo and lemon, piled into a toasted buttered hot dog bun. Simple, luxurious, and the pinnacle of American seaside food culture.",
+    desc2: "A Chicago Hot Dog is a beef frankfurter in a poppy seed bun topped with yellow mustard, neon relish, fresh onion, tomato, pickled sport peppers, pickle and celery salt. Ketchup is absolutely forbidden.",
+    chips: [{l:"Origin", v:"New England coast"},{l:"Spice Level", v:"🌶️"},{l:"Best Time", v:"Summer lunch"},{l:"Price", v:"$18–28"}],
+    fact: "The Lobster Roll was invented during the Great Depression in 1929 at Perry's restaurant in Connecticut, when lobster — then considered 'poor people food' — was so cheap it was served in sandwiches to workers.",
+    fact2: "In Chicago, asking for ketchup on a hot dog is considered a social transgression. The city's culinary identity is so tied to the 'dragged through the garden' dog that some vendors will refuse to serve you ketchup entirely.",
+    ingredients: ["300g cooked lobster meat", "3 tbsp mayonnaise", "1 tbsp lemon juice", "Fresh tarragon or chives", "Salt & white pepper", "4 hot dog buns", "2 tbsp butter", "Celery salt (optional)"],
+    steps: ["Pick lobster meat into large chunks — do not shred.", "Gently toss with mayo, lemon juice, salt and fresh herbs.", "Taste and adjust seasoning — lobster should shine, not be drowned in mayo.", "Butter the sides of the hot dog buns and toast in a dry pan until golden.", "Fill each bun generously with lobster mixture.", "Serve immediately with a light dusting of celery salt."]
+  },
+  {
+    id: "spain", name: "Spain", flag: "🇪🇸",
+    tagline: "Tapas culture & Andalusian sun",
+    food: "Churros con Chocolate",
+    food2: "Bocadillo de Jamón",
+    desc: "Churros are deep-fried dough sticks — light and airy inside, crispy and ridged outside — dusted in cinnamon sugar and served with a thick, almost pudding-like Spanish hot chocolate for dunking. The ultimate Spanish indulgence.",
+    desc2: "Bocadillo de Jamón Ibérico is Spain's everyday perfection — a crusty baguette rubbed with tomato, drizzled with olive oil, layered with paper-thin slices of Ibérico ham. Five ingredients. Zero compromise.",
+    chips: [{l:"Origin", v:"Madrid / Andalusia"},{l:"Spice Level", v:"🌶️"},{l:"Best Time", v:"Breakfast & late night"},{l:"Price", v:"€3–6"}],
+    fact: "Madrid's Chocolatería San Ginés has been serving churros con chocolate since 1894 and never closes — it operates 24 hours a day, 365 days a year, serving everyone from clubbers at 5am to tourists at noon.",
+    fact2: "Jamón Ibérico de Bellota — from pigs fed only on acorns — is among the most expensive cured meats in the world at up to €4,500 per leg. Spanish law even dictates the exact acreage of forest each pig must have to feed.",
+    ingredients: ["250ml water", "1 cup plain flour", "1 tbsp sugar", "Pinch of salt", "1 tsp vanilla", "Oil for frying", "Cinnamon sugar for dusting", "Dark chocolate & cream for dipping sauce"],
+    steps: ["Bring water, sugar, salt and vanilla to a boil.", "Remove from heat and add flour all at once, stir vigorously into a smooth dough.", "Transfer to piping bag with a star nozzle.", "Heat oil to 180°C and pipe 10cm lengths straight into the oil.", "Fry 2–3 minutes per side until deep golden.", "Drain, dust immediately in cinnamon sugar and serve with hot chocolate."]
+  }
+];
+
+let favorites = JSON.parse(localStorage.getItem('sf-favs') || '[]');
+let currentCountryId = null;
+let isSpinning = false;
+let spinAngle = 0;
+
+// ══ SECTION NAV ══
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  event.target.classList.add('active');
+  if (id === 'explore') renderCountryGrid();
+  if (id === 'favorites') renderFavorites();
+}
+
+// ══ WHEEL ══
+function drawWheel() {
+  const canvas = document.getElementById('wheel-canvas');
+  const ctx = canvas.getContext('2d');
+  const cx = 170, cy = 170, r = 160;
+  const slice = (2 * Math.PI) / countries.length;
+  const colors = ['#2c1a0e','#c0392b','#d4a843','#5a7a5a','#8b4513','#b5451b','#6b8e6b','#a0522d'];
+
+  ctx.clearRect(0, 0, 340, 340);
+
+  countries.forEach((c, i) => {
+    const start = spinAngle + i * slice;
+    const end = start + slice;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, start, end);
+    ctx.closePath();
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.fill();
+    ctx.strokeStyle = '#faf6ef';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(start + slice / 2);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#faf6ef';
+    ctx.font = 'bold 11px Outfit, sans-serif';
+    ctx.fillText(c.flag + ' ' + c.name, r - 10, 4);
+    ctx.restore();
+  });
+
+  // Center circle
+  ctx.beginPath();
+  ctx.arc(cx, cy, 28, 0, 2 * Math.PI);
+  ctx.fillStyle = '#faf6ef';
+  ctx.fill();
+  ctx.strokeStyle = '#e8dfd0';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  ctx.fillStyle = '#2c1a0e';
+  ctx.font = 'bold 13px Outfit, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('SPIN', cx, cy + 5);
+}
+
+function spinWheel() {
+  if (isSpinning) return;
+  isSpinning = true;
+  const btn = document.getElementById('spin-btn');
+  btn.disabled = true;
+  document.getElementById('spin-result').classList.remove('show');
+
+  const totalRotation = (Math.PI * 2 * (8 + Math.random() * 8));
+  const duration = 4000;
+  const start = performance.now();
+  const startAngle = spinAngle;
+
+  function animate(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 4);
+    spinAngle = startAngle + totalRotation * ease;
+    drawWheel();
+
+    if (progress < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      isSpinning = false;
+      btn.disabled = false;
+      // Find which country the pointer lands on
+      const slice = (2 * Math.PI) / countries.length;
+      const normalized = (((-spinAngle - Math.PI / 2) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+      const idx = Math.floor(normalized / slice) % countries.length;
+      const landed = countries[idx];
+      showSpinResult(landed);
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
+function showSpinResult(c) {
+  document.getElementById('spin-flag').textContent = c.flag;
+  document.getElementById('spin-country').textContent = c.name;
+  document.getElementById('spin-dish').textContent = '✨ Discover: ' + c.food + ' & ' + c.food2;
+  document.getElementById('spin-explore-btn').onclick = () => openModal(c.id);
+  document.getElementById('spin-result').classList.add('show');
+}
+
+// ══ COUNTRY GRID ══
+function renderCountryGrid(filter = '') {
+  const grid = document.getElementById('country-grid');
+  const filtered = countries.filter(c =>
+    c.name.toLowerCase().includes(filter.toLowerCase()) ||
+    c.food.toLowerCase().includes(filter.toLowerCase()) ||
+    c.food2.toLowerCase().includes(filter.toLowerCase())
+  );
+  grid.innerHTML = filtered.map(c => `
+    <div class="country-card" onclick="openModal('${c.id}')">
+      <span class="fav-dot" onclick="toggleFav(event,'${c.id}')">${favorites.includes(c.id) ? '❤️' : '🤍'}</span>
+      <span class="flag">${c.flag}</span>
+      <div class="c-name">${c.name}</div>
+      <div class="c-food">${c.food} · ${c.food2}</div>
+    </div>
+  `).join('');
+}
+
+function filterCountries() {
+  renderCountryGrid(document.getElementById('search-input').value);
+}
+
+// ══ FAVORITES ══
+function toggleFav(e, id) {
+  e.stopPropagation();
+  if (favorites.includes(id)) {
+    favorites = favorites.filter(f => f !== id);
+  } else {
+    favorites.push(id);
+  }
+  localStorage.setItem('sf-favs', JSON.stringify(favorites));
+  updateFavCount();
+  renderCountryGrid(document.getElementById('search-input')?.value || '');
+}
+
+function updateFavCount() {
+  document.getElementById('fav-count-stat').textContent = favorites.length;
+}
+
+function renderFavorites() {
+  const grid = document.getElementById('fav-grid');
+  const empty = document.getElementById('fav-empty');
+  const favCountries = countries.filter(c => favorites.includes(c.id));
+  if (favCountries.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+  } else {
+    empty.style.display = 'none';
+    grid.innerHTML = favCountries.map(c => `
+      <div class="country-card" onclick="openModal('${c.id}')">
+        <span class="fav-dot" onclick="toggleFav(event,'${c.id}')">❤️</span>
+        <span class="flag">${c.flag}</span>
+        <div class="c-name">${c.name}</div>
+        <div class="c-food">${c.food} · ${c.food2}</div>
+      </div>
+    `).join('');
+  }
+}
+
+// ══ MODAL ══
+function openModal(id) {
+  const c = countries.find(x => x.id === id);
+  if (!c) return;
+  currentCountryId = id;
+
+  document.getElementById('m-flag').textContent = c.flag;
+  document.getElementById('m-country').textContent = c.name;
+  document.getElementById('m-food').textContent = c.food;
+  document.getElementById('m-desc').textContent = c.desc;
+  document.getElementById('m-fact').textContent = c.fact;
+  document.getElementById('m-desc2').textContent = c.desc2;
+  document.getElementById('m-fact2').textContent = c.fact2;
+  document.getElementById('dish2-tab').textContent = c.food2;
+
+  const chips = document.getElementById('m-chips');
+  chips.innerHTML = c.chips.map(ch => `<div class="info-chip"><strong>${ch.l}</strong><span>${ch.v}</span></div>`).join('');
+
+  const ingList = document.getElementById('m-ingredients');
+  ingList.innerHTML = c.ingredients.map(i => `<li>${i}</li>`).join('');
+
+  const stepList = document.getElementById('m-steps');
+  stepList.innerHTML = c.steps.map(s => `<li>${s}</li>`).join('');
+
+  switchTab('overview', document.querySelector('.food-tab'));
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.food-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+// ══ INIT ══
+drawWheel();
+updateFavCount();
+</script>
+</body>
+</html>
